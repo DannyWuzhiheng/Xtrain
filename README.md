@@ -4,7 +4,9 @@
 ## 文件使用方法
 > 首先确保有`Python`环境
 >
-> 然后使用`pip install pyttsx3,pypiwin32`(记得使用[清华源](https://pypi.tuna.tsinghua.edu.cn/simple/))
+> 然后使用`pip install pyttsx3,pypiwin32,pyaudio`(记得使用[清华源](https://pypi.tuna.tsinghua.edu.cn/simple/))
+>
+> 将文件放在D:\目录下，将文件夹名称改为LYXSYXXtrain
 >
 > 然后运行.exe文件，（使用github下载的，运行.py文件)
 
