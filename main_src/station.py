@@ -2,6 +2,23 @@ import random as rd
 import turtle
 import pyttsx3
 import time
+import pyaudio
+import wave
+def play(filename = r"D:LYXSYXXtrain\到站提示.wav"):
+  wf = wave.open(filename, 'rb')
+  p = pyaudio.PyAudio()
+  stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+          channels=wf.getnchannels(),
+          rate=wf.getframerate(),
+          output=True)
+  data = wf.readframes(1024)
+  while data != b'':
+    stream.write(data)
+    data = wf.readframes(1024)
+  stream.stop_stream()
+  stream.close()
+  p.terminate()
+
 talk = pyttsx3.init()
 class T(turtle.Turtle):
     def write(self, arg: object, move: bool = False, align: str = "left", font: tuple[str, int, str] = ...) -> None:
@@ -14,6 +31,7 @@ tur.pd()
 tur.write("校园号列车",font=("宋体",40,"normal"),align='center')
 t = T()
 t.pencolor("red")
+
 class BusStation:
     def __init__(self, station_name,station_english):
         self.station_name = station_name
@@ -50,18 +68,21 @@ class BusStation:
         return self.number_words[n]
     def announce(self):
         t.write(f"下一站：{self.station_name}.The next stop is {self.station_english}",font=("宋体",15,"normal"),align='center')
-        talk.say(f"下一站。。。。。。。。。。：       {self.station_name}.。。。。。。The next stop is............       {self.station_english}")
+        talk.say(f"下一站。。。。。。。。。。：       {self.station_name}.。。。。。。The next stop is............       {self.station_english}.")
         talk.runAndWait() 
         talk.stop()
+        
     def arrived(self):
+        play()
         t.write(f"列车即将进站{self.station_name},the train is arriving at {self.station_english}",font=("宋体",15,"normal"),align='center')
-        talk.say(f"列车即将进站    。。。。{self.station_name},。。。。。。。the train is arriving at      。。。。。{self.station_english}")
+        talk.say(f"列车即将进站    。。。。{self.station_name},。。。。。。。the train is arriving at      。。。。。{self.station_english}.")
         talk.runAndWait() 
         talk.stop()        
         a=rd.randint(1,25)
         time.sleep(1.5)
+        play()
         t.write(f"列车已停靠在{self.station_name},{a}站台,the train has arrived {self.station_english},platform {a}",font=("宋体",15,"normal"),align='center')
-        talk.say(f"列车已停靠在     。。{self.station_name},{a}站台,。。。the train has arrived      。。{self.station_english},platform {self.Eng(a)}")
+        talk.say(f"列车已停靠在     。。{self.station_name},{a}站台,。。。the train has arrived      。。{self.station_english},platform {self.Eng(a)}.")
         talk.runAndWait() 
         talk.stop()      
 class BusRoute:
@@ -72,7 +93,7 @@ class BusRoute:
         self.current_station_index = 0
         self.chinese_station = chinese_station
     def next_station(self):
-        if self.current_station_index < len(self.stations):
+        if self.current_station_index < len(self.stations) - 1:
             current_station = self.stations[self.current_station_index]
             self.current_station_index += 1
             current_station.announce()
@@ -80,14 +101,17 @@ class BusRoute:
             current_station.arrived()
             time.sleep(1)
         else:
+            play()
             t.write(f"已经到达终点站:{self.chinese_station}，请下车，We arrived the last stop {self.english_station}",font=("宋体",15,"normal"),align='center')
-            talk.say(f"已经到达终点站:       。。。。。{self.chinese_station}，请下车。。。。。We arrived the last stop          。。。。{self.english_station}")
+            talk.say(f"已经到达终点站:       。。。。。{self.chinese_station}，请下车。。。。。We arrived the last stop          。。。。{self.english_station}.")
             talk.runAndWait() 
             talk.stop() 
     def start_route(self):
-        t.write(f"欢迎乘坐由罗源县实验小学客运段直骋的{self.route_name}动车组列车，本次列车终点站：{self.chinese_station}",font=("宋体",15,"normal"),align='center')
+
+        t.write(f"欢迎乘坐由罗源县实验小学客运段直骋的{self.route_name}动车组列车，本次列车终点站：{self.chinese_station}.",font=("宋体",15,"normal"),align='center')
         self.ap=self.route_name.replace('X','校')
-        talk.say(f"欢迎乘坐由罗源县实验小学客运段直骋的  。。。。{self.ap}  动车组列车，本次列车终点站：      。。。{self.chinese_station}")
+        play()
+        talk.say(f"欢迎乘坐由罗源县实验小学客运段直骋的  。。。。{self.ap}  动车组列车，本次列车终点站：      。。。{self.chinese_station}.")
         talk.runAndWait() 
         talk.stop() 
         self.next_station()
@@ -103,7 +127,6 @@ if __name__ == "__main__":
         except:
             t.write("价格格式错误",font=("宋体",25,"normal"),align='center')
         if money >= 10:
-
             route1 = BusRoute(route_name, [station1, station2, station3],"the gate","校门口")
             route1.start_route()
             route1.next_station()
